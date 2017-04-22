@@ -1,0 +1,82 @@
+﻿@model PagedList.IPagedList<BasicRegisterLoginApp.Models.User>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "All Users";
+}
+<h2>@ViewBag.Title</h2>
+
+<br />
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        @TempData["Message"]
+    </div>
+}
+
+@Html.Partial("_LoggedIn")
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+            @using (Html.BeginForm("Index", "Users", FormMethod.Get))
+            {
+                <div class="input-group">
+                    @Html.TextBox("SearchNameString", ViewBag.CurrentFilter as string,
+                                new { @class = "form-control", placeholder = "Filter by Name" })
+                    <span class="input-group-btn" style="width:0;">
+                        <button class="btn btn-primary" type="button">Filter</button>
+                    </span>
+                </div>
+            }
+        </th>
+        <th>
+            @Html.ActionLink("Email", "Index", new { sortOrder = ViewBag.EmailSortParm, currentFilter = ViewBag.CurrentFilter })
+            @using (Html.BeginForm("Index", "Users", FormMethod.Get))
+            {
+                <div class="input-group">
+                    @Html.TextBox("SearchEmailString", ViewBag.CurrentFilter as string,
+                                new { @class = "form-control", placeholder = "Filter by Email" })
+                    <span class="input-group-btn" style="width:0;">
+                        <button class="btn btn-primary" type="button">Filter</button>
+                    </span>
+                </div>
+            }
+        </th>
+        <th>
+            Date of Birth
+        </th>
+        <th>
+            Additional information
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.ValueFor(modelItem => item.BirthDate, "{0:dd - MMM - yyyy}")
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AdditionalInfo)
+            </td>
+        </tr>
+    }
+</table>
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
